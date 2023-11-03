@@ -9,44 +9,8 @@ import {
 import { experimentalStyled as styled } from "@mui/material/styles";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Flashcard } from "../types/flashcard.types";
-import generateFlashcard from "../api/generateFlashcard";
-
-// const sampleFlashcards: Flashcard[] = [
-//   {
-//     id: "1",
-//     topic: "Math",
-//     cards: [
-//       {
-//         id: "1",
-//         question: "What is 2 + 2?",
-//         answer: "4",
-//       },
-//       {
-//         id: "2",
-//         question: "What is 5 * 7?",
-//         answer: "35",
-//       },
-//     ],
-//   },
-//   {
-//     id: "2",
-//     topic: "Science",
-//     cards: [
-//       {
-//         id: "1",
-//         question: "What is the capital of France?",
-//         answer: "Paris",
-//       },
-//       {
-//         id: "2",
-//         question: "What is the chemical symbol for water?",
-//         answer: "H2O",
-//       },
-//     ],
-//   },
-//   // Add more Flashcards here
-// ];
+import { FlashcardT } from "../types/flashcard.types";
+import { addFlashcards } from "../api/openai";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -61,7 +25,7 @@ function Home() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [topic, setTopic] = useState("");
-  const [flashcards, setFlashcards] = useState<Flashcard[]>(() => {
+  const [flashcards, setFlashcards] = useState<FlashcardT[]>(() => {
     const savedFlashcards = localStorage.getItem("flashcards");
     return JSON.parse(savedFlashcards || "[]");
   });
@@ -73,26 +37,19 @@ function Home() {
 
   const handleClickGenerate = () => {
     setLoading(true);
-    generateFlashcard(topic)
-      .then((qaCards) => {
-        setFlashcards([
-          ...flashcards,
-          {
-            id: flashcards.length + 1,
-            topic: topic,
-            cards: qaCards,
-          },
-        ]);
-
+    addFlashcards(topic)
+      .then((flashcard) => {
+        setFlashcards([...flashcards, flashcard]);
         setLoading(false);
+        setTopic("");
       })
       .catch(() => {
-        setLoading(false);
         console.log("ERROR");
+        setLoading(false);
       });
   };
 
-  const handleClickFlashCard = (flashcard: Flashcard) => {
+  const handleClickFlashCard = (flashcard: FlashcardT) => {
     navigate(`/flashcard/${flashcard.id}`, { state: { flashcard } });
   };
 
@@ -105,12 +62,17 @@ function Home() {
               fullWidth
               placeholder="Enter a topic to generate new flashcard"
               value={topic}
+              disabled={loading}
               onChange={(e) => setTopic(e.target.value)}
               sx={{ background: "#ffffff" }}
             />
           </Grid>
           <Grid item container justifyContent="center">
-            <Button variant="outlined" onClick={handleClickGenerate}>
+            <Button
+              variant="outlined"
+              disabled={loading}
+              onClick={handleClickGenerate}
+            >
               {loading ? "Generating ..." : "Generate New Flashcard"}
             </Button>
           </Grid>

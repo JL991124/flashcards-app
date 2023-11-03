@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Button, Card, CardContent, Grid } from "@mui/material";
-import { QACard } from "../types/flashcard.types";
+import { CardT } from "../types/flashcard.types";
 
 interface QuestionCardsProp {
-  cards: QACard[];
+  cards: CardT[];
 }
 
 const QuestionCards: React.FC<QuestionCardsProp> = ({ cards }) => {

@@ -1,11 +1,11 @@
-export interface Flashcard {
-  id: number;
+export interface FlashcardT {
+  id: string;
   topic: string;
-  cards: QACard[];
+  cards: CardT[];
 }
 
-export interface QACard {
-  id: number;
+export interface CardT {
+  id: string;
   question: string;
   answer: string;
 }

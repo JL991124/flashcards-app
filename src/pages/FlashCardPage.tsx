@@ -1,11 +1,13 @@
 import { useLocation } from "react-router-dom";
 import { Grid, Typography } from "@mui/material";
 import QuestionCards from "../components/QuestionCards";
-import { Flashcard } from "../types/flashcard.types";
+import { FlashcardT } from "../types/flashcard.types";
 
 const FlashCardPage = () => {
   const location = useLocation();
-  const flashcard: Flashcard = location.state ? location.state.flashcard : null;
+  const flashcard: FlashcardT = location.state
+    ? location.state.flashcard
+    : null;
 
   console.log("flashcard page - ", flashcard);
   return (
